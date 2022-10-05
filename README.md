@@ -1,6 +1,6 @@
 # Tic Tac Toe AI Game Development
 
-This is a game created on Python of the famous Tic Tac Toe game. The AI wins a considerable of times. The game is a bit monotonous i.e. the AI will make the same moves for same input given. \\
+This is a game created on Python of the famous Tic Tac Toe game. The AI wins a considerable of times. The game is a bit monotonous i.e. the AI will make the same moves for same input given. 
 
 This is the position of the game moves user can input:
 - 0 &ensp;  1 &ensp;  2     &emsp; &emsp; &emsp; &emsp;     _  &ensp; _  &ensp; _ 
