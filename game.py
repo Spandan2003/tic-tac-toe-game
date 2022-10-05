@@ -1,65 +1,90 @@
 #import pygame
 import numpy
 
+def dell(arra, basket):
+    for i in basket:
+        arra.remove(i)
+    return arra
 def humanmov(mov):
+    global lose, lose2, lose3, win, win2, win3, neut
     human.append(mov)
     arr[mov] = -1
+    basket = []
     for i in range(len(win)):
         if mov in win[i]:
-            win.remove(win[i])
-            i-=1
-    for i in win2:
-        if mov in i:
-            win2.remove(win[i])
+            basket.append(win[i])
+    win = dell(win, basket)
+    basket = []
+    for i in range(len(win2)):
+        if mov in win2[i]:
+            basket.append(win2[i])
+    win2 = dell(win2, basket)
+    basket = []
     for i in range(len(neut)):
         j = neut[i]
         if mov in neut[i]:
-            neut.remove(neut[i])
             j.remove(mov)
             lose.append(j)
-            i-=1
+            basket.append(neut[i])
+    neut = dell(neut, basket)
+    basket = []
     for i in range(len(lose)):
         j = lose[i]
         if mov in lose[i]:
-            lose.remove(lose[i])
             j.remove(mov)
             lose2.append(j)
-            i-=1
+            basket.append(lose[i])
+    lose = dell(lose, basket)
+    basket = []
     for i in range(len(lose2)):
         j = lose2[i]
         if mov in lose2[i]:
-            lose2.remove(lose2[i])
             j.remove(mov)
             lose3.append(j)
+            basket.append(lose2[i])
+    lose2 = dell(lose2, basket)
+    basket = []
 
 def compmov(mov):
+    global lose, lose2, lose3, win, win2, win3, neut
     comp.append(mov)
     arr[mov] = 1
+    basket = []
     for i in range(len(lose)):
         if mov in lose[i]:
-            lose.remove(lose[i])
-            i-=1
+            basket.append(lose[i])
+    lose = dell(lose, basket)
+    basket = []
+    
     for i in range(len(lose2)):
-        if mov in i:
-            lose2.remove(lose2[i])
+        if mov in lose2[i]:
+            basket.append(lose2[i])
+    lose2 = dell(lose2, basket)
+    basket = []
     for i in range(len(neut)):
         j = neut[i]
         if mov in neut[i]:
-            neut.remove(neut[i])
             j.remove(mov)
             win.append(j)
+            basket.append(neut[i])
+    neut = dell(neut, basket)
+    basket = []
     for i in range(len(win)):
         j = win[i]
         if mov in win[i]:
-            win.remove(win[i])
             j.remove(mov)
             win2.append(j)
+            basket.append(win[i])
+    win = dell(win, basket)
+    basket = []
     for i in range(len(win2)):
         j = win2[i]
         if mov in win2[i]:
-            win2.remove(win2[i])
             j.remove(mov)
             win3.append(j)
+            basket.append(win2[i])
+    win2 = dell(win2, basket)
+    basket = []
 
 def match(human, comp):
     if(len(win2)>0):
@@ -70,10 +95,12 @@ def match(human, comp):
         return win[0][0]
     if(len(lose)>0):
         return lose[0][0]
-    return neut[0][0]
+    if(len(neut)>0):
+        return neut[0][0]
+    return arr.index(0)
         
 def display(arr):
-    displ = ['><' if item == -1 else 'O' if item==1 else '_' for item in arr]
+    displ = ['X' if item == -1 else 'O' if item==1 else '_' for item in arr]
     for i in range(3):
         for j in range(3):
             print(displ[3*i+j], end = "    ")
@@ -97,11 +124,19 @@ comp = []
 compmov(4)
 while(True):
     display(arr)
-    mov = int(input())
+    correct = False
+    while(not correct):
+        mov = int(input())
+        if(arr[mov]==0):
+            correct=True
+        else:
+            print("WRONG INPUT. Please try again")
+        display(arr)
     humanmov(mov)
     if(len(lose3)>0):
         print("YOU WON")
         break
+    
     nextmove = match(human, comp)
     compmov(nextmove)
     if(len(win3)>0):
