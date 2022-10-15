@@ -152,14 +152,13 @@ while(True):
     if(len(lose3)>0):                                      
         print("YOU WON")
         break
-    
+    if(not 0 in arr):                                       #No result and out of moves, we draw
+        print("A draw")
+        break
     nextmove = match(human, comp)                           #Calculate AI's best move and comprehend it
     compmov(nextmove)
     if(len(win3)>0):
         print("Better luck Next Time")
-        break
-    if(not 0 in arr):                                       #No result and out of moves, we draw
-        print("A draw")
         break
     
 display(arr, True)
