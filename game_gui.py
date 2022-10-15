@@ -108,14 +108,23 @@ def match(human, comp):                             #Decides which move AI shoul
     return arr.index(0)                             #If no move exists then take first possible move from 0,1,2,...7,8
         
 def display(text, loc = (-1,-1)):                       #Present game on screen. If over then don't show instructions for next move
+    pygame.draw.rect(canvas, (215,109,219), textbox)
     if loc == (-1,-1):
         loc = (recta.centerx, recta.centery+12*l+(sizeOfWin[1]-recta.centery-12*l)//2)
     my_font = pygame.font.SysFont('Comic Sans MS', 30)
-    text_surface = my_font.render(text, False, (0, 0, 0))
-    canvas.blit(text_surface, loc)
+    text_surface = my_font.render(text, False, "black")
+    textRect = text_surface.get_rect()
+    textRect.center = loc
+    canvas.blit(text_surface, textRect)
 
 def cross(mov):
-    rect1 = 2
+    x,y = getPos(mov)
+    pygame.draw.line(canvas, "black", (x-1.5*1.4*l,y-1.5*1.4*l), (x+1.5*1.4*l,y+1.5*1.4*l), 4)
+    pygame.draw.line(canvas, "black", (x+1.5*1.4*l,y-1.5*1.4*l), (x-1.5*1.4*l,y+1.5*1.4*l), 4)
+
+def zeroes(mov):
+    x,y = getPos(mov)
+    pygame.draw.circle(canvas, "black", (x,y), 1.5*l, 5)
 
 sizeOfWin = (720, 480)
 l = 10
@@ -126,11 +135,13 @@ canvas = pygame.display.set_mode(sizeOfWin)
 img = pygame.transform.scale(pygame.image.load("background.jpg"), sizeOfWin)
 recta = pygame.Rect(0,0,26*l,26*l)
 recta.centerx, recta.centery = sizeOfWin[0]//2, sizeOfWin[1]//2
+textbox = pygame.Rect(0,sizeOfWin[1] - (sizeOfWin[1]-recta.centery-4*l)//2, sizeOfWin[0], (sizeOfWin[1]-recta.centery-4*l)//2)
 lineArrS = [[recta.centerx-12*l,recta.centery-4*l], [recta.centerx-12*l,recta.centery+4*l], [recta.centerx-4*l,recta.centery-12*l], [recta.centerx+4*l,recta.centery-12*l]]
 lineArrE = [[recta.centerx+12*l,recta.centery-4*l], [recta.centerx+12*l,recta.centery+4*l], [recta.centerx-4*l,recta.centery+12*l], [recta.centerx+4*l,recta.centery+12*l]]
 
 canvas.blit(img, (0, 0))
 pygame.draw.rect(canvas, "white", recta)
+pygame.draw.rect(canvas, (215,109,219), textbox)
 for i in range(len(lineArrS)):
     pygame.draw.line(canvas, "black", lineArrS[i], lineArrE[i], width=5)
 
@@ -153,6 +164,7 @@ lose3 = []
 human = []
 comp = []
 
+"WRONG MOVE"
 over = False
 gameOn = True
 while gameOn:
@@ -168,24 +180,31 @@ while gameOn:
                 gameOn = False
         if event.type == MOUSEBUTTONDOWN and not over:
             pos = pygame.mouse.get_pos()
-            pos = ((pos[0] - recta.centerx + 12*l)/24/l , (pos[1] - recta.centery + 12*l)/24/l)
-            if(0<=pos[0]<=2 and 0<=pos[1]<=2):
-                mov = 3*math.floor(pos[1])+math.floor(pos[0])
+            print(pos)
+            print(pos[0] - recta.centerx + 12*l, pos[1] - recta.centery + 12*l)
+            pos = ((pos[0] - recta.centerx + 12*l)/8/l , (pos[1] - recta.centery + 12*l)/8/l)
+            mov = 3*math.floor(pos[1])+math.floor(pos[0])
+            if(0<=pos[0]<=3 and 0<=pos[1]<=3 and arr[mov]==0):
                 humanmov(mov)
+                cross(mov)
                 if(len(lose3)>0):
                     display("You WIN")
-                    over = True
-                    break
-                nextmove = match(human, comp)                           #Calculate AI's best move and comprehend it
-                compmov(nextmove)
-                if(len(win3)>0):
-                    display("You LOSE")
                     over = True
                     break
                 if(not 0 in arr):                                       #No result and out of moves, we draw
                     display("A Draw")
                     over = True
                     break
+                nextmove = match(human, comp)                           #Calculate AI's best move and comprehend it
+                compmov(nextmove)
+                zeroes(nextmove)
+                if(len(win3)>0):
+                    display("You LOSE")
+                    over = True
+                    break
+            else:
+                display("WRONG MOVE")
+            print(mov, human, comp, arr, sep='\n')
         # Check for QUIT event
         elif event.type == QUIT:
             gameOn = False
